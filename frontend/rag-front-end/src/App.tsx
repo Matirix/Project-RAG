@@ -54,7 +54,9 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 w-full">
-      <header className="bg-white py-4 px-6 text-xl font-bold">RAG Chat</header>
+      <header className="bg-white py-4 px-6 text-xl font-bold font-sans">
+        RAG Chat
+      </header>
 
       <div className="relative flex-1 overflow-hidden mb-20">
         <main className="h-full overflow-y-auto px-6 py-4 pb-24">

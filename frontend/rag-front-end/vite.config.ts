@@ -5,11 +5,10 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [
     react({
-      // optional babel plugins can go here
       babel: {
         plugins: [["babel-plugin-react-compiler"]],
       },
     }),
-    tailwindcss(), // <-- Tailwind as a Vite plugin, not a Babel plugin
+    tailwindcss(),
   ],
 });
