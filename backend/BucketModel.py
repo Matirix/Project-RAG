@@ -30,3 +30,10 @@ class S3BucketModel:
             )
         except ClientError as e:
             raise RuntimeError(f"Failed to upload bytes to S3: {e}")
+
+    def list_objects(self):
+        try:
+            response = self.s3.list_objects_v2(Bucket=self.bucket_name)
+            return response.get("Contents", [])
+        except ClientError as e:
+            raise RuntimeError(f"Failed to list objects in S3: {e}")

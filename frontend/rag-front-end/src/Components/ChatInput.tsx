@@ -14,7 +14,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onChange,
   onSend,
   isPending = false,
-  placeholder = "Type your message...",
+  placeholder = "Press [Tab] to begin your prompt!",
   maxRows = 6,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -26,7 +26,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (!textarea) return;
 
     textarea.style.height = "auto";
-    const lineHeight = 24; // approx Tailwind text-base
+    const lineHeight = 24;
     const maxHeight = lineHeight * maxRows;
 
     textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;

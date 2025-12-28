@@ -65,17 +65,24 @@ def chat(payload: TextInput):
     )
 
 
-@app.post("/upload")
+@app.get("/bucket")
+async def list_bucket_objects():
+    try:
+        objects = s3_model.list_objects()
+        return {"documents": objects}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.post("/bucket/upload")
 async def upload_file(file: UploadFile = File(...)):
     print(file)
     try:
-        # Read file into memory
         file_bytes = await file.read()
 
         if not file_bytes:
             raise HTTPException(status_code=400, detail="Empty file")
 
-        # Generate safe S3 key
         extension = os.path.splitext(file.filename)[1]
         name = file.filename
         s3_key = f"{name}{extension}"

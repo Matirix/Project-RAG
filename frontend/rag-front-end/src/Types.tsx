@@ -32,3 +32,11 @@ export interface CitationItem {
 
 export type Citation = CitationItem[];
 export type CitationGroups = Citation[];
+
+export type S3Object = {
+  Key: string;
+  LastModified: Date;
+  ETag: string;
+  Size: number;
+  StorageClass: string;
+};
