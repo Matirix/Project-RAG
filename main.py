@@ -1,11 +1,13 @@
 # main.py
 import os
+from uuid import uuid4
 
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.BucketModel import S3BucketModel
 from backend.KnowledgeBaseModel import KnowledgeBaseModel
 from backend.schemas import TextInput
 
@@ -27,15 +29,23 @@ app.add_middleware(
 # -------------------------
 REGION = os.getenv("REGION", "us-west-2")
 KNOWLEDGE_BASE_ID = os.getenv("KNOWLEDGE_BASE_ID")
+KNOWLEDGE_BASE_DATA_SOURCE = os.getenv("KNOWLEDGE_BASE_DATA_SOURCE")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 # -------------------------
 # Services
 # -------------------------
 kb_model = KnowledgeBaseModel(
     knowledge_base_id=KNOWLEDGE_BASE_ID,
+    data_source=KNOWLEDGE_BASE_DATA_SOURCE,
     region=REGION,
     # model_arn="us.anthropic.claude-3-5-haiku-20241022-v1:0",  # Either use inference profilee or model ARN
     # model_arn="arn:aws:bedrock:us-west-2:817406037539:inference-profile/us.amazon.nova-lite-v1:0",  # Either use inference profilee or model ARN
+)
+
+s3_model = S3BucketModel(
+    bucket_name=BUCKET_NAME,
+    region_name=REGION,
 )
 
 
@@ -53,6 +63,38 @@ def chat(payload: TextInput):
         text=payload.text,
         session_id=payload.session_id,
     )
+
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    print(file)
+    try:
+        # Read file into memory
+        file_bytes = await file.read()
+
+        if not file_bytes:
+            raise HTTPException(status_code=400, detail="Empty file")
+
+        # Generate safe S3 key
+        extension = os.path.splitext(file.filename)[1]
+        name = file.filename
+        s3_key = f"{name}{extension}"
+
+        s3_model.upload_bytes(
+            data=file_bytes,
+            key=s3_key,
+            content_type=file.content_type,
+        )
+        kb_model.sync_data_source()
+
+        return {
+            "message": "Upload successful",
+            "filename": file.filename,
+            "s3_key": s3_key,
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def main():

@@ -10,14 +10,26 @@ class KnowledgeBaseModel:
         self,
         knowledge_base_id: str,
         region: str = "us-west-2",
+        data_source: str = "",
         model_arn: str = "us.amazon.nova-micro-v1:0",
     ):
         self.knowledge_base_id = knowledge_base_id
         self.model_arn = model_arn
         self.session_id = None
+        self.data_source = data_source
         self.bedrock_agent_runtime = boto3.client(
             "bedrock-agent-runtime",
             region_name=region,
+        )
+        self.bedrock_client = boto3.client("bedrock-agent")
+
+    def sync_data_source(self):
+        """
+        Begins Ingestion and Embedding
+        """
+        self.bedrock_client.start_ingestion_job(
+            knowledgeBaseId=self.knowledge_base_id,
+            dataSourceId=self.data_source,
         )
 
     def retrieve_and_generate(
