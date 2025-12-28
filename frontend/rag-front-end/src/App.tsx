@@ -6,7 +6,7 @@ import { ChatInput } from "./Components/ChatInput";
 import { ChatResponse } from "./Components/ChatResponse";
 import { UserInput } from "./Components/UserMessage";
 import { TypingDots } from "./Components/AnimatedTyping";
-
+import { Sidebar } from "./Components/Sidebar";
 export default function App() {
   const [conversation, setConversation] = useState<(Message | RagResponse)[]>(
     [],
@@ -23,7 +23,6 @@ export default function App() {
 
   const handleSend = () => {
     if (!input.trim()) return;
-
     const userMessage: Message = { role: "user", text: input };
     setConversation((prev) => [...prev, userMessage]);
     setInput("");
@@ -50,8 +49,9 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 w-full">
-      <header className="bg-white py-4 px-6 text-xl font-bold font-sans">
+    <div className="flex flex-col h-screen bg-gray-50 w-full font-sans">
+      <Sidebar />
+      <header className="bg-white py-4 px-6 text-xl font-bold font-sans z-10">
         RAG-GPT
       </header>
       {conversation.length == 0 && (

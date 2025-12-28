@@ -77,7 +77,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             ${
               isDisabled
                 ? "bg-gray-300 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
+                : "bg-purple hover:bg-purple-900"
             }
           `}
       >

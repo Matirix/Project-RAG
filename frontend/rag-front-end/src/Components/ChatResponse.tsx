@@ -9,9 +9,9 @@ interface ChatResponseProps {
 export const ChatResponse: React.FC<ChatResponseProps> = ({ response }) => {
   const { text } = response;
   const citations = "citations" in response ? response.citations : undefined;
-  const session_id = "session_id" in response ? response.session_id : undefined;
+  // const session_id = "session_id" in response ? response.session_id : undefined;
 
-  console.log(citations, session_id);
+  // console.log(citations, session_id);
 
   return (
     <div className="w-full">
