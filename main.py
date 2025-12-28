@@ -34,6 +34,8 @@ KNOWLEDGE_BASE_ID = os.getenv("KNOWLEDGE_BASE_ID")
 kb_model = KnowledgeBaseModel(
     knowledge_base_id=KNOWLEDGE_BASE_ID,
     region=REGION,
+    # model_arn="us.anthropic.claude-3-5-haiku-20241022-v1:0",  # Either use inference profilee or model ARN
+    # model_arn="arn:aws:bedrock:us-west-2:817406037539:inference-profile/us.amazon.nova-lite-v1:0",  # Either use inference profilee or model ARN
 )
 
 
@@ -51,14 +53,6 @@ def chat(payload: TextInput):
         text=payload.text,
         session_id=payload.session_id,
     )
-
-
-@app.post("/echo")
-def echo_text(payload: TextInput):
-    return {
-        "original_text": payload.text,
-        "length": len(payload.text),
-    }
 
 
 def main():

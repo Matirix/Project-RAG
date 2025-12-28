@@ -2,18 +2,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRagQuery } from "./Hooks/useResponse";
 import type { Message, RagResponse } from "./Types";
-import { ChatInput } from "./Components/InputBar";
+import { ChatInput } from "./Components/ChatInput";
 import { ChatResponse } from "./Components/ChatResponse";
-import { UserInput } from "./Components/UserInput";
+import { UserInput } from "./Components/UserMessage";
 import { TypingDots } from "./Components/AnimatedTyping";
 
-const INITIAL_PROMPT =
-  "You are an assistant that helps summarize previous letters and generate editable templates.";
-
 export default function App() {
-  const [conversation, setConversation] = useState<(Message | RagResponse)[]>([
-    { role: "system", text: INITIAL_PROMPT },
-  ]);
+  const [conversation, setConversation] = useState<(Message | RagResponse)[]>(
+    [],
+  );
   const [input, setInput] = useState<string>("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -46,7 +43,7 @@ export default function App() {
         console.error(err);
         setConversation((prev) => [
           ...prev,
-          { role: "assistant", text: "Error: Unable to get response." },
+          { role: "system", text: "Error: Unable to get response." },
         ]);
       },
     });
@@ -55,8 +52,21 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen bg-gray-50 w-full">
       <header className="bg-white py-4 px-6 text-xl font-bold font-sans">
-        RAG Chat
+        RAG-GPT
       </header>
+      {conversation.length == 0 && (
+        <div className="fixed top-1/3 bottom-1/2 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4 z-10">
+          <p className="font-bold flex justify-self-center text-3xl mb-5">
+            What can I help you with today?
+          </p>
+          <ChatInput
+            value={input}
+            onChange={setInput}
+            onSend={handleSend}
+            isPending={isPending}
+          />
+        </div>
+      )}
 
       <div className="relative flex-1 overflow-hidden mb-20">
         <main className="h-full overflow-y-auto px-6 py-4 pb-24">
@@ -82,13 +92,16 @@ export default function App() {
         {/* Bottom fade overlay */}
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-gray-50 to-transparent" />
       </div>
-
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSend={handleSend}
-        isPending={isPending}
-      />
+      {conversation.length > 1 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4">
+          <ChatInput
+            value={input}
+            onSend={handleSend}
+            onChange={setInput}
+            isPending={isPending}
+          />
+        </div>
+      )}
     </div>
   );
 }

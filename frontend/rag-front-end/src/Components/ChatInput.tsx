@@ -46,16 +46,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4">
-      <div className="flex items-center gap-3 bg-white/90 backdrop-blur border border-gray-200 rounded-2xl shadow-lg px-4 py-3">
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          value={value}
-          placeholder={placeholder}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          className="
+    <div className="flex items-center gap-3 bg-white/90 backdrop-blur border border-gray-200 rounded-2xl shadow-lg px-4 py-3">
+      <textarea
+        ref={textareaRef}
+        rows={1}
+        value={value}
+        placeholder={placeholder}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        className="
             flex-1
             resize-none
             bg-transparent
@@ -65,13 +64,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             max-h-40
             overflow-y-auto
           "
-        />
+      />
 
-        <button
-          onClick={onSend}
-          disabled={isDisabled}
-          aria-label="Send message"
-          className={`
+      <button
+        onClick={onSend}
+        disabled={isDisabled}
+        aria-label="Send message"
+        className={`
             flex items-center justify-center
             w-10 h-10 rounded-full
             transition
@@ -81,23 +80,22 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 : "bg-blue-500 hover:bg-blue-600"
             }
           `}
+      >
+        {/* Up arrow */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="w-5 h-5"
         >
-          {/* Up arrow */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-5 h-5"
-          >
-            <path d="M12 19V5" />
-            <path d="M5 12l7-7 7 7" />
-          </svg>
-        </button>
-      </div>
+          <path d="M12 19V5" />
+          <path d="M5 12l7-7 7 7" />
+        </svg>
+      </button>
     </div>
   );
 };
