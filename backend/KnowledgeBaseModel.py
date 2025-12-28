@@ -1,8 +1,12 @@
 # models/knowledge_base_model.py
+import asyncio
+import json
 import os
-from typing import Any, Dict, List, Optional
+import time
+from typing import Any, Dict, List
 
 import boto3
+from fastapi.responses import StreamingResponse
 
 
 class KnowledgeBaseModel:
@@ -19,11 +23,11 @@ class KnowledgeBaseModel:
             "bedrock-agent-runtime",
             region_name=region,
         )
+        self.text_prompt_template = "Explain it simply, provide a a few examples based on $search_results$ and then sum it up again in simple terms"
 
     def retrieve_and_generate(
         self,
         text: str,
-        session_id: Optional[str] = None,
         max_tokens: int = 1000,
         temperature: float = 0.4,
         top_p: float = 0.9,
@@ -51,18 +55,68 @@ class KnowledgeBaseModel:
                                 "temperature": temperature,
                                 "topP": top_p,
                             }
-                        }
+                        },
+                        "promptTemplate": {
+                            "textPromptTemplate": self.text_prompt_template
+                        },
                     },
                 },
             },
         }
-
-        if session_id:
-            request["sessionId"] = session_id
-
+        if self.session_id:
+            request["sessionId"] = self.session_id
         response = self.bedrock_agent_runtime.retrieve_and_generate(**request)
+        self.session_id = response.get("sessionId")
 
         return self._format_response(response)
+
+    def retrieve_and_generate_stream_sse(self, text: str):
+        """
+        Used to emulate chat gpt-like printing behavour
+        :param text: The prompt to generate
+        :param session_id: The session ID to use for the request      (for sessions)
+        :param max_tokens: The maximum number of tokens to generate   (cost management)
+        :param temperature: The temperature to use for the generation (factual <-> creative)
+        :param top_p: The top-p value to use for the generation       (largeness of the set, factual <-> creative)
+        """
+        request: Dict[str, Any] = {
+            "input": {"text": text},
+            "retrieveAndGenerateConfiguration": {
+                "type": "KNOWLEDGE_BASE",
+                "knowledgeBaseConfiguration": {
+                    "knowledgeBaseId": self.knowledge_base_id,
+                    "modelArn": self.model_arn,
+                    "generationConfiguration": {
+                        "inferenceConfig": {
+                            "textInferenceConfig": {
+                                "maxTokens": 1000,
+                                "temperature": 0.4,
+                                "topP": 0.9,
+                            }
+                        },
+                        "promptTemplate": {
+                            "textPromptTemplate": self.text_prompt_template
+                        },
+                    },
+                },
+            },
+        }
+        if self.session_id:
+            request["sessionId"] = self.session_id
+        response = self.bedrock_agent_runtime.retrieve_and_generate_stream(**request)
+
+        # Extract session ID
+        self.session_id = response.get("sessionId")
+        # Extract the actual stream generator
+        stream_iterator = response["stream"]
+
+        for chunk in stream_iterator:
+            # chunk is a dict, not a string
+            text_chunk = chunk.get("output", {}).get("text")
+            if text_chunk:
+                yield f"data: {json.dumps({'text': text_chunk, 'session_id': self.session_id})}\n\n"
+
+        # Optionally store session_id for reuse
 
     def _format_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -70,7 +124,6 @@ class KnowledgeBaseModel:
         """
 
         output_text = response["output"]["text"]
-        session_id = response.get("sessionId")
 
         citations: List[List[Dict[str, Any]]] = []
 
@@ -89,5 +142,5 @@ class KnowledgeBaseModel:
         return {
             "text": output_text,
             "citations": citations,
-            "session_id": session_id,
+            "session_id": self.session_id,
         }

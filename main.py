@@ -5,6 +5,7 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from backend.KnowledgeBaseModel import KnowledgeBaseModel
 from backend.schemas import TextInput
@@ -49,7 +50,14 @@ def health_check():
 def chat(payload: TextInput):
     return kb_model.retrieve_and_generate(
         text=payload.text,
-        session_id=payload.session_id,
+    )
+
+
+@app.get("/stream_rag")
+def stream_rag(prompt: str):
+    return StreamingResponse(
+        kb_model.retrieve_and_generate_stream_sse(prompt),
+        media_type="text/event-stream",
     )
 
 
