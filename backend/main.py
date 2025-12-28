@@ -1,15 +1,13 @@
 # main.py
 import os
-from uuid import uuid4
 
 import uvicorn
+from BucketModel import S3BucketModel
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-
-from backend.BucketModel import S3BucketModel
-from backend.KnowledgeBaseModel import KnowledgeBaseModel
-from backend.schemas import TextInput
+from KnowledgeBaseModel import KnowledgeBaseModel
+from schemas import TextInput
 
 load_dotenv()
 
