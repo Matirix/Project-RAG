@@ -1,7 +1,6 @@
 # main.py
 import os
 
-import uvicorn
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from models.bucket_model import S3BucketModel
@@ -11,7 +10,7 @@ from models.text_input_model import TextInput
 
 app = FastAPI()
 settings = Settings()
-origins = ["http://localhost:5173"]
+origins = ["http://localhost:5173", "http://localhost"]
 
 
 app.add_middleware(
@@ -100,16 +99,3 @@ async def upload_file(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# def main():
-#     uvicorn.run(
-#         "main:app",  # module:app
-#         host="0.0.0.0",
-#         port=8000,
-#         reload=True,  # auto-reload in development
-#     )
-
-
-# if __name__ == "__main__":
-#     main()

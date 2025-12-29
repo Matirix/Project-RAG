@@ -1,12 +1,11 @@
 // src/Components/Sidebar.tsx
 import React, { useState } from "react";
-import { Dialog } from "@headlessui/react";
 import { Settings, Database } from "lucide-react";
 import { Modal } from "./Modal";
 import { BucketModal } from "./BucketModal";
 export const Sidebar: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selected, setSelected] = useState<"bucket" | "settings">("");
+  const [selected, setSelected] = useState<"bucket" | "settings" | null>("");
 
   const openModal = (type: "bucket" | "settings") => {
     console.log(type);

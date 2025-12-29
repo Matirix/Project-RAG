@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ./backend # path to your backend Dockerfile
+      dockerfile: Dockerfile
+    container_name: rag-backend
+    ports:
+      - "8000:8000" # expose backend API port
+    volumes: # credentials used to run the aws service, may be substituted for an IAM role
+      - ~/.aws:/root/.aws
+    env_file:
+      - ./backend/.env
+    networks:
+      - rag-network
+
+  frontend:
+    build:
+      context: ./frontend # path to your frontend Dockerfile
+      dockerfile: Dockerfile
+    container_name: rag-frontend
+    environment:
+      - VITE_API_URL=http://backend:8000
+    ports:
+      - "80:80" # expose Nginx port
+    depends_on:
+      - backend # make sure backend starts first
+    networks:
+      - rag-network
+
+networks:
+  rag-network:
+    driver: bridge

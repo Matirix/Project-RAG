@@ -20,7 +20,7 @@ export const BucketModal: React.FC = () => {
     mutate(file, {
       onSuccess: () => {
         setFile(null);
-        toast.onSuccess("Upload Success");
+        toast.Success("Upload Success");
       },
       onError: (error) => {
         console.error(error);

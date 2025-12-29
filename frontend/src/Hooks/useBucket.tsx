@@ -14,7 +14,7 @@ export const useBucketObjects = () => {
   });
 };
 
-export const useUploadFile = (): UseMutationResult<Error, Message, unknown> => {
+export const useUploadFile = (): UseMutationResult<Error, unknown> => {
   const [progress, setProgress] = useState(0);
   const queryClient = useQueryClient();
   const mutation = useMutation({

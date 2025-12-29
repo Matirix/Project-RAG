@@ -1,6 +1,6 @@
 import api from "./api";
 import type { S3Object } from "../Types";
-export const fetchBucketObjects = async (): Promise<S3Object>[] => {
+export const fetchBucketObjects = async (): Promise<Promise<S3Object>[]> => {
   const res = await api.get("/bucket");
   return res.data.documents;
 };
