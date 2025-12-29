@@ -2,17 +2,17 @@
 import os
 
 import uvicorn
-from BucketModel import S3BucketModel
-from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from KnowledgeBaseModel import KnowledgeBaseModel
-from schemas import TextInput
-
-load_dotenv()
+from models.bucket_model import S3BucketModel
+from models.knowledge_base_model import KnowledgeBaseModel
+from models.settings_model import Settings
+from models.text_input_model import TextInput
 
 app = FastAPI()
+settings = Settings()
 origins = ["http://localhost:5173"]
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,31 +25,31 @@ app.add_middleware(
 # -------------------------
 # ENV
 # -------------------------
-REGION = os.getenv("REGION", "us-west-2")
-KNOWLEDGE_BASE_ID = os.getenv("KNOWLEDGE_BASE_ID")
-KNOWLEDGE_BASE_DATA_SOURCE = os.getenv("KNOWLEDGE_BASE_DATA_SOURCE")
-BUCKET_NAME = os.getenv("BUCKET_NAME")
-
-# -------------------------
-# Services
-# -------------------------
-kb_model = KnowledgeBaseModel(
-    knowledge_base_id=KNOWLEDGE_BASE_ID,
-    data_source=KNOWLEDGE_BASE_DATA_SOURCE,
-    region=REGION,
-    # model_arn="us.anthropic.claude-3-5-haiku-20241022-v1:0",  # Either use inference profilee or model ARN
-    # model_arn="arn:aws:bedrock:us-west-2:817406037539:inference-profile/us.amazon.nova-lite-v1:0",  # Either use inference profilee or model ARN
-)
-
-s3_model = S3BucketModel(
-    bucket_name=BUCKET_NAME,
-    region_name=REGION,
-)
+REGION = settings.region
+KNOWLEDGE_BASE_ID = settings.knowledge_base_id
+KNOWLEDGE_BASE_DATA_SOURCE = settings.knowledge_base_data_source
+BUCKET_NAME = settings.bucket_name
 
 
 # -------------------------
 # Routes
 # -------------------------
+@app.on_event("startup")
+def startup_event():
+    app.state.kb_model = KnowledgeBaseModel(
+        knowledge_base_id=KNOWLEDGE_BASE_ID,
+        data_source=KNOWLEDGE_BASE_DATA_SOURCE,
+        region=REGION,
+        # model_arn="us.anthropic.claude-3-5-haiku-20241022-v1:0",  # Either use inference profilee or model ARN
+        # model_arn="arn:aws:bedrock:us-west-2:817406037539:inference-profile/us.amazon.nova-lite-v1:0",  # Either use inference profilee or model ARN
+    )
+
+    app.state.s3_model = S3BucketModel(
+        bucket_name=BUCKET_NAME,
+        region_name=REGION,
+    )
+
+
 @app.get("/")
 def health_check():
     return {"status": "ok"}
@@ -57,7 +57,7 @@ def health_check():
 
 @app.post("/retrieve_and_generate")
 def chat(payload: TextInput):
-    return kb_model.retrieve_and_generate(
+    return app.state.kb_model.retrieve_and_generate(
         text=payload.text,
         session_id=payload.session_id,
     )
@@ -66,7 +66,7 @@ def chat(payload: TextInput):
 @app.get("/bucket")
 async def list_bucket_objects():
     try:
-        objects = s3_model.list_objects()
+        objects = app.state.s3_model.list_objects()
         return {"documents": objects}
     except Exception as e:
         return {"error": str(e)}
@@ -85,12 +85,12 @@ async def upload_file(file: UploadFile = File(...)):
         name = file.filename
         s3_key = f"{name}{extension}"
 
-        s3_model.upload_bytes(
+        app.state.s3_model.upload_bytes(
             data=file_bytes,
             key=s3_key,
             content_type=file.content_type,
         )
-        kb_model.sync_data_source()
+        app.state.kb_model.sync_data_source()
 
         return {
             "message": "Upload successful",
@@ -102,14 +102,14 @@ async def upload_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def main():
-    uvicorn.run(
-        "main:app",  # module:app
-        host="127.0.0.1",
-        port=8000,
-        reload=True,  # auto-reload in development
-    )
+# def main():
+#     uvicorn.run(
+#         "main:app",  # module:app
+#         host="0.0.0.0",
+#         port=8000,
+#         reload=True,  # auto-reload in development
+#     )
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

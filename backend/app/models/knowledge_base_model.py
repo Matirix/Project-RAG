@@ -1,5 +1,4 @@
 # models/knowledge_base_model.py
-import os
 from typing import Any, Dict, List, Optional
 
 import boto3
@@ -21,7 +20,7 @@ class KnowledgeBaseModel:
             "bedrock-agent-runtime",
             region_name=region,
         )
-        self.bedrock_client = boto3.client("bedrock-agent")
+        self.bedrock_client = boto3.client("bedrock-agent", region_name=region)
 
     def sync_data_source(self):
         """

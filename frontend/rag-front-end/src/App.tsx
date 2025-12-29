@@ -39,7 +39,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto px-6 py-4 pb-24">
+      <main className="flex-1 overflow-y-auto px-6 py-4 pb-30">
         {conversation.map((msg, idx) =>
           msg.role === "user" ? (
             <UserInput key={idx} message={msg} />
@@ -50,6 +50,7 @@ export default function App() {
 
         {isPending && <TypingDots />}
         <div ref={messagesEndRef} />
+        <div className=" absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-50 to-transparent" />
       </main>
 
       {conversation.length > 1 && (
