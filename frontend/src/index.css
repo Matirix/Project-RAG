@@ -9,3 +9,8 @@
     --font-sans: "Quicksand";
     /*--font-sans: "Montserrat";*/
 }
+.katex-display {
+    @apply my-1; /* roughly 0.25rem */
+    @apply max-w-full;
+    @apply overflow-x-auto;
+}

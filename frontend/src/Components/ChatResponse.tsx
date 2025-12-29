@@ -20,11 +20,18 @@ export const ChatResponse: React.FC<ChatResponseProps> = ({ response }) => {
       ).values(),
     );
   }, [citations]);
+  const preprocessMath = (text: string) => {
+    return text
+      .replace(/\\\((.*?)\\\)/g, (_, p1) => `$${p1}$`)
+      .replace(/\\\[(.*?)\\\]/g, (_, p1) => `$$${p1}$$`)
+      .replace(/\\text\{(.*?)\}/g, "$1"); // remove unsupported \text{} macros
+  };
   return (
     <div className="w-full">
-      <div className="max-w-3xl mt-10 mx-auto text-gray-800 leading-relaxed whitespace-pre-wrap">
+      <div className="max-w-3xl mt-10 prose mx-auto text-gray-800 leading-relaxed whitespace-pre-wrap">
         <ReactMarkdown
-          children={text}
+          key={text}
+          children={preprocessMath(text)}
           remarkPlugins={[remarkMath]}
           rehypePlugins={[rehypeKatex]}
         />
