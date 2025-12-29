@@ -1,8 +1,8 @@
 # Project-RAG
 A Retrieval-Augmented Generation (RAG) application consisting of:
-	•	Backend: Python + FastAPI + AWS Bedrock / Knowledge Base
-	•	Frontend: Vite + React (built and served via Nginx)
-	•	Containerized using Docker and Docker ComposeTo run:
+- Backend: Python + FastAPI + AWS Bedrock / Knowledge Base
+- Frontend: Vite + React (built and served via Nginx)
+- Containerized using Docker and Docker ComposeTo run:
 
 The Bedrock / Knowledge base relies on Amazon Micro. This can be reconfigured, depending on 
 the model, but do note that there may be different processes you need to go through before using
