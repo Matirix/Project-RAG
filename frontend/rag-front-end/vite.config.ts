@@ -11,4 +11,7 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  server: {
+    host: true, // makes it accessible outside container
+  },
 });

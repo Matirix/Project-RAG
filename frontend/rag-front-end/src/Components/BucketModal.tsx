@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useBucketObjects, useUploadFile } from "../hooks/useBucket";
+import { useBucketObjects, useUploadFile } from "../Hooks/useBucket";
 import { toast } from "react-hot-toast";
 import type { S3Object } from "../Types";
 export const BucketModal: React.FC = () => {
