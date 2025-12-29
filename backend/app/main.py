@@ -9,7 +9,7 @@ from models.settings_model import Settings
 from models.text_input_model import TextInput
 
 app = FastAPI()
-settings = Settings()
+settings = Settings()  # pyright: ignore[reportCallIssue]
 origins = ["http://localhost:5173", "http://localhost"]
 
 

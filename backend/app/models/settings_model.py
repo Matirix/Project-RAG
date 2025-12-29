@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -13,5 +13,3 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = Path(__file__).parents[2] / ".env"
-
-    # model_config = SettingsConfigDict(env_file="../../.env")
