@@ -8,6 +8,18 @@ The Bedrock / Knowledge base relies on Amazon Micro. This can be reconfigured, d
 the model, but do note that there may be different processes you need to go through before using
 different models (like Anthropic).
 
+### Pricing:
+| Model / Price       | Input Cost (per 1K) | Output Cost (per 1K) | Input Tokens (1K) | Output Tokens (1K) | Total Cost (USD) |
+|--------------------|-------------------|--------------------|-----------------|------------------|----------------|
+| Nova Micro          | $0.000035         | $0.00014           | 228.998         | 36.27            | $0.01 + $0.01 = $0.02 |
+| Claude 4.5  | $0.001            | $0.005             | 228.998         | 36.27            | $0.229 + $0.181 = $0.41 |
+
+Approximates:
+Input tokens: 228.998k → words ≈ 228,998 × 0.75 ≈ 171,749 words
+Output tokens: 36.27k → words ≈ 36,270 × 0.75 ≈ 27,203 words
+
+The first show's my actual usage for the couple days I developed the application. I must have sent at least 100 requests. The result was a cost of 0.02 cents. If I switched to Claude 4.5, it would be 0.41 cents with the same usage. 
+
 
 ## Pre-Reqs
 Before running this project, ensure you have:
@@ -69,6 +81,7 @@ docker run -d -p 5173:80 rag-front
 V1.0 - Initial 
 
 ### TBD:
+- Configuration File
 - Documentation/Errors
 - A yaml that builds the infrastructure for this.
 - Fine-tuning

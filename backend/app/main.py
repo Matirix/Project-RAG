@@ -39,6 +39,7 @@ def startup_event():
         knowledge_base_id=KNOWLEDGE_BASE_ID,
         data_source=KNOWLEDGE_BASE_DATA_SOURCE,
         region=REGION,
+        # model_arn="arn:aws:bedrock:us-west-2:817406037539:inference-profile/global.anthropic.claude-haiku-4-5-20251001-v1:0",
         # model_arn="us.anthropic.claude-3-5-haiku-20241022-v1:0",  # Either use inference profilee or model ARN
         # model_arn="arn:aws:bedrock:us-west-2:817406037539:inference-profile/us.amazon.nova-lite-v1:0",  # Either use inference profilee or model ARN
     )
