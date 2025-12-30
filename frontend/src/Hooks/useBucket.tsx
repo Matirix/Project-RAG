@@ -1,10 +1,5 @@
-import {
-  useMutation,
-  type UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { fetchBucketObjects, uploadFile } from "../api/bucket";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchBucketObjects, uploadFiles } from "../api/bucket";
 import { useState } from "react";
 
 export const useBucketObjects = () => {
@@ -14,16 +9,17 @@ export const useBucketObjects = () => {
   });
 };
 
-export const useUploadFile = (): UseMutationResult<Error, unknown> => {
+export const useUploadFiles = () => {
   const [progress, setProgress] = useState(0);
   const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (file: File) => uploadFile(file, setProgress),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["bucketObjects"],
-      });
-    },
-  });
-  return { ...mutation, progress };
+
+  return {
+    ...useMutation({
+      mutationFn: (files: File[]) => uploadFiles(files, setProgress),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["bucketObjects"] });
+      },
+    }),
+    progress,
+  };
 };

@@ -1,7 +1,8 @@
 # main.py
 import os
+from typing import List
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from models.bucket_model import S3BucketModel
 from models.knowledge_base_model import KnowledgeBaseModel
@@ -73,30 +74,22 @@ async def list_bucket_objects():
 
 
 @app.post("/bucket/upload")
-async def upload_file(file: UploadFile = File(...)):
-    print(file)
+async def upload_files(
+    files: List[UploadFile] = File(...), paths: List[str] = Form(...)
+):
     try:
-        file_bytes = await file.read()
+        for file, path in zip(files, paths):
+            data = await file.read()
 
-        if not file_bytes:
-            raise HTTPException(status_code=400, detail="Empty file")
+            app.state.s3_model.upload_bytes(
+                data=data,
+                key=path,
+                content_type=file.content_type,
+            )
 
-        extension = os.path.splitext(file.filename)[1]
-        name = file.filename
-        s3_key = f"{name}{extension}"
-
-        app.state.s3_model.upload_bytes(
-            data=file_bytes,
-            key=s3_key,
-            content_type=file.content_type,
-        )
         app.state.kb_model.sync_data_source()
 
-        return {
-            "message": "Upload successful",
-            "filename": file.filename,
-            "s3_key": s3_key,
-        }
+        return {"message": "Upload successful", "count": len(files)}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
