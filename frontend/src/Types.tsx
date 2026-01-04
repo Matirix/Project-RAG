@@ -13,6 +13,13 @@ export interface RagRequest {
   prompt: string;
   conversation: Message[];
 }
+export interface UserPreferences {
+  session_id: number | null;
+  max_tokens: number;
+  temperature: number;
+  top_p: number;
+  prompt_template: string;
+}
 
 // Citations
 export interface S3Location {

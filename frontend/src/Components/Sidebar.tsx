@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Settings, Database } from "lucide-react";
 import { Modal } from "./Modal";
 import { BucketModal } from "./BucketModal";
+import { UserPreferencesModal } from "./UserPreferencesModal";
 
 type ModalType = "bucket" | "settings" | null;
 
@@ -51,7 +52,7 @@ export const Sidebar: React.FC = () => {
         title="Settings"
       >
         {/* You can put your settings content here */}
-        <div>Settings content goes here</div>
+        <UserPreferencesModal />
       </Modal>
     </>
   );

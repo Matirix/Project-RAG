@@ -2,7 +2,7 @@
 import os
 from typing import List
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from models.bucket_model import S3BucketModel
 from models.knowledge_base_model import KnowledgeBaseModel
@@ -25,7 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-user_preferences = UserPreferences()
 
 # -------------------------
 # ENV
@@ -41,6 +40,7 @@ BUCKET_NAME = settings.bucket_name
 # -------------------------
 @app.on_event("startup")
 def startup_event():
+    app.state.user_preferences = UserPreferences()
     app.state.kb_model = KnowledgeBaseModel(
         knowledge_base_id=KNOWLEDGE_BASE_ID,
         data_source=KNOWLEDGE_BASE_DATA_SOURCE,
@@ -49,7 +49,6 @@ def startup_event():
         # model_arn="us.anthropic.claude-3-5-haiku-20241022-v1:0",  # Either use inference profilee or model ARN
         model_arn="arn:aws:bedrock:us-west-2:817406037539:inference-profile/global.amazon.nova-2-lite-v1:0",  # Either use inference profilee or model ARN
     )
-
     app.state.s3_model = S3BucketModel(
         bucket_name=BUCKET_NAME,
         region_name=REGION,
@@ -61,12 +60,26 @@ def health_check():
     return {"status": "ok"}
 
 
+@app.get("/user_pref")
+def user_pref():
+    return app.state.user_preferences
+
+
+@app.put("/user_pref")
+def update_user_pref(payload: UserPreferences = Body(...)):
+    # only update fields provided
+    app.state.user_preferences = payload
+    print("PAYLOAD=", payload)
+    print("user_preferences=", app.state.user_preferences)
+    return app.state.user_preferences
+
+
 @app.post("/retrieve_and_generate")
 def chat(payload: TextInput):
-    user_preferences.session_id = payload.session_id
+    app.state.user_preferences.session_id = payload.session_id
     return app.state.kb_model.retrieve_and_generate(
         text=payload.text,
-        user_pref=user_preferences,
+        user_pref=app.state.user_preferences,
     )
 
 
