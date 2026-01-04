@@ -86,11 +86,13 @@ docker build -t rag-front .
 docker run -d -p 5173:80 rag-front
 ```
 
+## Fine-Tuning
+Each model has their own fields but I have tested Amazon's and they have fields like temperature, topK, topP and Max Tokens. You can also modify the Prompt Template. There is no data base involved, only a single object that persists within the session. Database might be a TBD.
+
 ### Change Log:
 V1.0 - Initial 
-
+V1.2 - Added user preferences as settings.
 ### TBD:
-- Configuration File
 - Documentation/Errors
 - A yaml that builds the infrastructure for this.
 - Fine-tuning
