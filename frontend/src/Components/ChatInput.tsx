@@ -45,16 +45,29 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
+  const newLinePrompt = (
+    <div className="text-gray-500 text-center mt-5">
+      <p>
+        Press
+        <span className="bg-gray-300 p-1 rounded mx-1">Enter</span>
+        to send,
+        <span className="bg-gray-300 p-1 rounded mx-1">Shift+ Enter</span>
+        for a new line
+      </p>
+    </div>
+  );
+
   return (
-    <div className="flex items-center gap-3 bg-white/90 backdrop-blur border border-gray-200 rounded-2xl shadow-lg px-4 py-3">
-      <textarea
-        ref={textareaRef}
-        rows={1}
-        value={value}
-        placeholder={placeholder}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        className="
+    <div>
+      <div className="flex items-center gap-3 bg-white/90 backdrop-blur border border-gray-200 rounded-2xl shadow-lg px-4 py-3">
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          value={value}
+          placeholder={placeholder}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          className="
             flex-1
             resize-none
             bg-transparent
@@ -64,13 +77,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             max-h-40
             overflow-y-auto
           "
-      />
+        />
 
-      <button
-        onClick={onSend}
-        disabled={isDisabled}
-        aria-label="Send message"
-        className={`
+        <button
+          onClick={onSend}
+          disabled={isDisabled}
+          aria-label="Send message"
+          className={`
             flex items-center justify-center
             w-10 h-10 rounded-full
             transition
@@ -80,22 +93,24 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 : "bg-purple hover:bg-purple-900"
             }
           `}
-      >
-        {/* Up arrow */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="w-5 h-5"
         >
-          <path d="M12 19V5" />
-          <path d="M5 12l7-7 7 7" />
-        </svg>
-      </button>
+          {/* Up arrow */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-5 h-5"
+          >
+            <path d="M12 19V5" />
+            <path d="M5 12l7-7 7 7" />
+          </svg>
+        </button>
+      </div>
+      {newLinePrompt}
     </div>
   );
 };

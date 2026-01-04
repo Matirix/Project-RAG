@@ -26,9 +26,12 @@ export default function App() {
 
       {conversation.length === 0 && (
         <div className="fixed top-1/3 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4 z-10">
-          <p className="font-bold text-3xl mb-5">
-            What can I help you with today?
-          </p>
+          <div className="text-center">
+            <p className="font-bold text-2xl mb-2">RAG App</p>
+            <p className="font-semibold text-xl text-gray-500 mb-6">
+              Type a message to get started
+            </p>
+          </div>
 
           <ChatInput
             value={input}
@@ -39,7 +42,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto px-6 py-4 pb-30">
+      <main className="flex-1 overflow-y-auto px-6 py-4 pb-50">
         {conversation.map((msg, idx) =>
           msg.role === "user" ? (
             <UserInput key={idx} message={msg} />

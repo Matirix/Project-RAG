@@ -30,6 +30,14 @@ Aws credentials configured locally (via aws login)
 Docker and Docker Compose v2
 Python 3.12+, Deno
 
+## AWS Configuration
+This is required for boto3 commands
+Run the following commands and do the prompts, requires AWS CLI V2:
+```bash
+aws login
+aws configure
+```
+
 ## Environment Variables
 ### In the Backend folder:
 Have a .env located at the root of backend with the following:
@@ -61,7 +69,8 @@ python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 Frontend:
 ```bash
 cd frontend
-deno run dev
+npm install
+npm run dev
 ```
 ### Docker
 Option 1: docker compose up --build

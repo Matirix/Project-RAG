@@ -8,7 +8,11 @@ from models.bucket_model import S3BucketModel
 from models.knowledge_base_model import KnowledgeBaseModel
 from models.settings_model import Settings
 from models.text_input_model import TextInput
+from models.user_preferences import UserPreferences
 
+# -------------------------
+# Global Variables
+# -------------------------
 app = FastAPI()
 settings = Settings()  # pyright: ignore[reportCallIssue]
 origins = ["http://localhost:5173", "http://localhost"]
@@ -21,6 +25,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+user_preferences = UserPreferences()
 
 # -------------------------
 # ENV
@@ -58,9 +63,10 @@ def health_check():
 
 @app.post("/retrieve_and_generate")
 def chat(payload: TextInput):
+    user_preferences.session_id = payload.session_id
     return app.state.kb_model.retrieve_and_generate(
         text=payload.text,
-        session_id=payload.session_id,
+        user_pref=user_preferences,
     )
 
 

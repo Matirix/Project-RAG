@@ -2,6 +2,7 @@
 from typing import Any, Dict, List, Optional
 
 import boto3
+from models.user_preferences import UserPreferences
 
 
 class KnowledgeBaseModel:
@@ -34,10 +35,7 @@ class KnowledgeBaseModel:
     def retrieve_and_generate(
         self,
         text: str,
-        session_id: Optional[str] = None,
-        max_tokens: int = 1000,
-        temperature: float = 0.4,
-        top_p: float = 0.9,
+        user_pref: UserPreferences,
     ) -> Dict[str, Any]:
         """
         Perform a retrieve-and-generate call against the knowledge base
@@ -47,6 +45,7 @@ class KnowledgeBaseModel:
         :param temperature: The temperature to use for the generation (factual <-> creative)
         :param top_p: The top-p value to use for the generation       (largeness of the set, factual <-> creative)
         """
+        print(user_pref)
 
         request: Dict[str, Any] = {
             "input": {"text": text},
@@ -58,18 +57,21 @@ class KnowledgeBaseModel:
                     "generationConfiguration": {
                         "inferenceConfig": {
                             "textInferenceConfig": {
-                                "maxTokens": max_tokens,
-                                "temperature": temperature,
-                                "topP": top_p,
+                                "maxTokens": user_pref.max_tokens,
+                                "temperature": user_pref.temperature,
+                                "topP": user_pref.top_p,
                             }
-                        }
+                        },
+                        "promptTemplate": {
+                            "textPromptTemplate": user_pref.prompt_template
+                        },
                     },
                 },
             },
         }
 
-        if session_id:
-            request["sessionId"] = session_id
+        if user_pref.session_id:
+            request["sessionId"] = user_pref.session_id
 
         response = self.bedrock_agent_runtime.retrieve_and_generate(**request)
 
