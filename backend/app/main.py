@@ -67,10 +67,7 @@ def user_pref():
 
 @app.put("/user_pref")
 def update_user_pref(payload: UserPreferences = Body(...)):
-    # only update fields provided
     app.state.user_preferences = payload
-    print("PAYLOAD=", payload)
-    print("user_preferences=", app.state.user_preferences)
     return app.state.user_preferences
 
 

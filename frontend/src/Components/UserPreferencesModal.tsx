@@ -16,13 +16,13 @@ type UserPreferencesForm = z.infer<typeof userPrefSchema>;
 
 export const UserPreferencesModal: React.FC = () => {
   const { data: prefs, isLoading } = useUserPref();
-  const { mutate, isLoading: isUpdating } = useUpdateUserPref();
+  const { mutate, isPending: isUpdating } = useUpdateUserPref();
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<UserPreferencesForm>({
     resolver: zodResolver(userPrefSchema),
     defaultValues: {

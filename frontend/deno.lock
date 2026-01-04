@@ -3,7 +3,7 @@
   "specifiers": {
     "npm:@eslint/js@^9.39.1": "9.39.2",
     "npm:@headlessui/react@^2.2.9": "2.2.9_react@19.2.3_react-dom@19.2.3__react@19.2.3",
-    "npm:@hookform/resolvers@^5.2.2": "5.2.2_react-hook-form@7.70.0__react@19.2.3_react@19.2.3",
+    "npm:@hookform/resolvers@^3.10.0": "3.10.0_react-hook-form@7.70.0__react@19.2.3_react@19.2.3",
     "npm:@tailwindcss/vite@^4.1.18": "4.1.18_vite@7.3.0__@types+node@24.10.4__picomatch@4.0.3_@types+node@24.10.4",
     "npm:@tanstack/react-query@^5.90.12": "5.90.12_react@19.2.3",
     "npm:@types/node@^24.10.1": "24.10.4",
@@ -604,10 +604,9 @@
         "use-sync-external-store"
       ]
     },
-    "@hookform/resolvers@5.2.2_react-hook-form@7.70.0__react@19.2.3_react@19.2.3": {
-      "integrity": "sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==",
+    "@hookform/resolvers@3.10.0_react-hook-form@7.70.0__react@19.2.3_react@19.2.3": {
+      "integrity": "sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag==",
       "dependencies": [
-        "@standard-schema/utils",
         "react-hook-form"
       ]
     },
@@ -885,9 +884,6 @@
       "integrity": "sha512-hYT5d3YNdSh3mbCU1gwQyPgQd3T2ne0A3KG8KSBdav5TiBg6eInVmV+TeR5uHufiIgSFg0XsOWGW5/RhNcSvPg==",
       "os": ["win32"],
       "cpu": ["x64"]
-    },
-    "@standard-schema/utils@0.3.0": {
-      "integrity": "sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g=="
     },
     "@swc/helpers@0.5.18": {
       "integrity": "sha512-TXTnIcNJQEKwThMMqBXsZ4VGAza6bvN4pa41Rkqoio6QBKMvo+5lexeTMScGCIxtzgQJzElcvIltani+adC5PQ==",
@@ -3250,7 +3246,7 @@
       "dependencies": [
         "npm:@eslint/js@^9.39.1",
         "npm:@headlessui/react@^2.2.9",
-        "npm:@hookform/resolvers@^5.2.2",
+        "npm:@hookform/resolvers@^3.10.0",
         "npm:@tailwindcss/vite@^4.1.18",
         "npm:@tanstack/react-query@^5.90.12",
         "npm:@types/node@^24.10.1",

@@ -1,28 +1,16 @@
-import {
-  useQuery,
-  useMutation,
-  type UseMutationResult,
-  type UseQueryResult,
-  QueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import { getUserPref, updateUserPref } from "../api/userPreferences";
 
-// Hook to use the GET query
-export const useUserPref = (): UseQueryResult<any, Error> => {
-  return useQuery<any, Error>({
+export const useUserPref = () => {
+  return useQuery({
     queryKey: ["user_pref"],
     queryFn: getUserPref,
   });
 };
 
-export const useUpdateUserPref = (): UseMutationResult<
-  any,
-  Error,
-  any,
-  unknown
-> => {
+export const useUpdateUserPref = () => {
   const queryClient = new QueryClient();
-  return useMutation<any, Error, any, unknown>({
+  return useMutation({
     mutationFn: updateUserPref,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user_pref"] });

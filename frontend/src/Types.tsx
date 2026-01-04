@@ -14,7 +14,7 @@ export interface RagRequest {
   conversation: Message[];
 }
 export interface UserPreferences {
-  session_id: number | null;
+  // session_id: number | null;
   max_tokens: number;
   temperature: number;
   top_p: number;
