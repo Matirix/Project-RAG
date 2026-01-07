@@ -4,6 +4,7 @@ from typing import List
 
 from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from models.bucket_model import S3BucketModel
 from models.knowledge_base_model import KnowledgeBaseModel
 from models.settings_model import Settings
@@ -76,6 +77,24 @@ def chat(payload: TextInput):
     return app.state.kb_model.retrieve_and_generate(
         text=payload.text,
         user_pref=app.state.user_preferences,
+    )
+
+
+@app.post("/retrieve_and_generate/stream")
+async def chat_stream(payload: TextInput):
+    """Streaming endpoint for chat"""
+    # Get current preferences from DB
+
+    return StreamingResponse(
+        app.state.kb_model.retrieve_and_generate_stream(
+            text=payload.text,
+            user_pref=app.state.user_preferences,
+        ),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        },
     )
 
 

@@ -1,14 +1,17 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { ChatInput } from "./Components/ChatInput";
 import { ChatResponse } from "./Components/ChatResponse";
 import { UserInput } from "./Components/UserMessage";
 import { TypingDots } from "./Components/AnimatedTyping";
-import { Sidebar } from "./Components/Sidebar";
 import { useChatController } from "./Hooks/useChatController";
-
+import type { ModalType } from "./Types";
+import { Modal } from "./Components/Modal";
+import { BucketModal } from "./Components/BucketModal";
+import { UserPreferencesModal } from "./Components/UserPreferencesModal";
 export default function App() {
   const { conversation, input, setInput, sendMessage, isPending } =
     useChatController();
+  const [activeModal, setActiveModal] = useState<ModalType>(null);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -16,10 +19,29 @@ export default function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversation]);
 
+  const modals = (
+    <div>
+      <Modal
+        open={activeModal === "bucket"}
+        onClose={() => setActiveModal(null)}
+        title="S3 Bucket"
+      >
+        <BucketModal />
+      </Modal>
+
+      <Modal
+        open={activeModal === "settings"}
+        onClose={() => setActiveModal(null)}
+        title="Settings"
+      >
+        {/* You can put your settings content here */}
+        <UserPreferencesModal />
+      </Modal>
+    </div>
+  );
+
   return (
     <div className="flex flex-col h-screen bg-gray-50 w-full font-sans">
-      <Sidebar />
-
       <header className="bg-white py-4 px-6 text-xl font-bold z-10">
         RAG-GPT
       </header>
@@ -36,6 +58,8 @@ export default function App() {
           <ChatInput
             value={input}
             onChange={setInput}
+            onOpenBucket={() => setActiveModal("bucket")}
+            onOpenSettings={() => setActiveModal("settings")}
             onSend={sendMessage}
             isPending={isPending}
           />
@@ -63,9 +87,12 @@ export default function App() {
             onChange={setInput}
             onSend={sendMessage}
             isPending={isPending}
+            onOpenBucket={() => setActiveModal("bucket")}
+            onOpenSettings={() => setActiveModal("settings")}
           />
         </div>
       )}
+      {modals}
     </div>
   );
 }

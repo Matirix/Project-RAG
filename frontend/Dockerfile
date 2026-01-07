@@ -18,7 +18,7 @@ RUN deno install
 RUN deno task build-non-strict
 
 # Stage 2: Serve with Nginx
-FROM nginx:alpine
+FROM nginx:alpine-slim
 
 # Remove default static files
 RUN rm -rf /usr/share/nginx/html/*

@@ -35,7 +35,17 @@ export const UserPreferencesModal: React.FC = () => {
 
   // Reset form when prefs are loaded
   useEffect(() => {
-    if (prefs) reset(prefs);
+    console.log("Use Effect Called");
+    if (prefs) {
+      console.log(prefs.max_tokens);
+      console.log(prefs.top_p);
+      reset({
+        max_tokens: Number(prefs.max_tokens),
+        temperature: Number(prefs.temperature),
+        top_p: Number(prefs.top_p),
+        prompt_template: String(prefs.prompt_template),
+      });
+    }
   }, [prefs, reset]);
 
   const onSubmit = (data: UserPreferencesForm) => {
@@ -49,6 +59,7 @@ export const UserPreferencesModal: React.FC = () => {
   };
 
   if (isLoading) return <div>Loading...</div>;
+  console.log(prefs);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">

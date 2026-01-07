@@ -19,6 +19,7 @@ export const ChatResponse: React.FC<ChatResponseProps> = ({ response }) => {
         citations.flat().map((c) => [c.location?.s3Location?.uri, c]),
       ).values(),
     );
+    console.log();
   }, [citations]);
   const preprocessMath = (text: string) => {
     return text

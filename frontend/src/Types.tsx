@@ -8,6 +8,7 @@ export interface RagResponse extends Message {
   citations?: CitationGroups;
   session_id?: string;
 }
+export type ModalType = "bucket" | "settings" | null;
 
 export interface RagRequest {
   prompt: string;

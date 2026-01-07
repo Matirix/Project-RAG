@@ -90,10 +90,11 @@ docker run -d -p 5173:80 rag-front
 Each model has their own fields but I have tested Amazon's and they have fields like temperature, topK, topP and Max Tokens. You can also modify the Prompt Template. There is no data base involved, only a single object that persists within the session. Database might be a TBD.
 
 ### Change Log:
-V1.0 - Initial 
-V1.2 - Added user preferences as settings.
+V1.0  - Initial 
+V1.2  - Added user preferences as settings.
+V1.3  - User Prefences modifiable (No data persistence yet)
+      - Set up script provided
+
 ### TBD:
 - Documentation/Errors
-- A yaml that builds the infrastructure for this.
-- Fine-tuning
 - Local RAG
