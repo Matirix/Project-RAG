@@ -1,0 +1,173 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudFormation template for S3 bucket, S3 Vector bucket with index, and Bedrock Knowledge Base"
+
+Parameters:
+  DataBucketName:
+    Type: String
+    Description: Name for the S3 data bucket (must be globally unique)
+    Default: my-bedrock-data-bucket
+
+  VectorBucketName:
+    Type: String
+    Description: Name for the S3 Vector bucket (lowercase, numbers, hyphens only)
+    Default: my-bedrock-vector-bucket
+
+  VectorIndexName:
+    Type: String
+    Description: Name for the vector index
+    Default: bedrock-vector-index
+
+  KnowledgeBaseName:
+    Type: String
+    Description: Name for the Bedrock Knowledge Base
+    Default: MyKnowledgeBase
+
+  EmbeddingDimension:
+    Type: Number
+    Description: Dimension of the embedding model (1024 for Titan v2)
+    Default: 1024
+
+Resources:
+  # S3 bucket for data storage
+  DataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${DataBucketName}"
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # S3 Vector bucket for storing embeddings
+  VectorBucket:
+    Type: AWS::S3Vectors::VectorBucket
+    Properties:
+      VectorBucketName: !Sub "${VectorBucketName}"
+
+  # Vector index within the vector bucket
+  VectorIndex:
+    Type: AWS::S3Vectors::Index
+    Properties:
+      VectorBucketArn: !GetAtt VectorBucket.VectorBucketArn
+      IndexName: !Ref VectorIndexName
+      DataType: float32
+      Dimension: !Ref EmbeddingDimension
+      DistanceMetric: cosine
+      MetadataConfiguration:
+        NonFilterableMetadataKeys:
+          - AMAZON_BEDROCK_TEXT
+          - AMAZON_BEDROCK_METADATA
+
+  # IAM Role for Bedrock Knowledge Base
+  BedrockKnowledgeBaseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: bedrock.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: S3DataAccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:ListBucket"
+                Resource:
+                  - !GetAtt DataBucket.Arn
+                  - !Sub "${DataBucket.Arn}/*"
+        - PolicyName: S3VectorsAccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3vectors:GetVectorBucket"
+                  - "s3vectors:GetIndex"
+                  - "s3vectors:PutVectors"
+                  - "s3vectors:GetVectors"
+                  - "s3vectors:DeleteVectors"
+                  - "s3vectors:ListVectors"
+                  - "s3vectors:QueryVectors"
+                Resource:
+                  - !GetAtt VectorBucket.VectorBucketArn
+                  - !GetAtt VectorIndex.IndexArn
+        - PolicyName: BedrockModelAccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "bedrock:InvokeModel"
+                Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/*"
+
+  # Bedrock Knowledge Base
+  KnowledgeBase:
+    Type: AWS::Bedrock::KnowledgeBase
+    Properties:
+      Name: !Ref KnowledgeBaseName
+      RoleArn: !GetAtt BedrockKnowledgeBaseRole.Arn
+      KnowledgeBaseConfiguration:
+        Type: VECTOR
+        VectorKnowledgeBaseConfiguration:
+          EmbeddingModelArn: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.titan-embed-text-v2:0"
+      StorageConfiguration:
+        Type: S3_VECTORS
+        S3VectorsConfiguration:
+          IndexArn: !GetAtt VectorIndex.IndexArn
+
+  # Data Source connecting S3 to Knowledge Base
+  DataSource:
+    Type: AWS::Bedrock::DataSource
+    Properties:
+      Name: !Sub "${KnowledgeBaseName}-datasource"
+      KnowledgeBaseId: !Ref KnowledgeBase
+      DataSourceConfiguration:
+        Type: S3
+        S3Configuration:
+          BucketArn: !GetAtt DataBucket.Arn
+
+Outputs:
+  DataBucketName:
+    Description: Name of the S3 data bucket
+    Value: !Ref DataBucket
+
+  DataBucketArn:
+    Description: ARN of the S3 data bucket
+    Value: !GetAtt DataBucket.Arn
+
+  VectorBucketName:
+    Description: Name of the S3 Vector bucket
+    Value: !Ref VectorBucket
+
+  VectorBucketArn:
+    Description: ARN of the S3 Vector bucket
+    Value: !GetAtt VectorBucket.VectorBucketArn
+
+  VectorIndexName:
+    Description: Name of the vector index
+    Value: !Ref VectorIndex
+
+  VectorIndexArn:
+    Description: ARN of the vector index
+    Value: !GetAtt VectorIndex.IndexArn
+
+  KnowledgeBaseId:
+    Description: ID of the Bedrock Knowledge Base
+    Value: !Ref KnowledgeBase
+
+  KnowledgeBaseArn:
+    Description: ARN of the Bedrock Knowledge Base
+    Value: !GetAtt KnowledgeBase.KnowledgeBaseArn

@@ -15,8 +15,7 @@ from models.user_preferences import UserPreferences
 # -------------------------
 app = FastAPI()
 settings = Settings()  # pyright: ignore[reportCallIssue]
-origins = ["http://localhost:5173", "http://localhost"]
-
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

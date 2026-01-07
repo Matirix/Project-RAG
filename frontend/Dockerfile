@@ -23,10 +23,11 @@ FROM nginx:alpine
 # Remove default static files
 RUN rm -rf /usr/share/nginx/html/*
 
-WORKDIR /usr/share/nginx/html
+# Create /rag folder
+RUN mkdir -p /usr/share/nginx/html/rag
 
-# Copy built frontend from builder stage
-COPY --from=builder /app/dist .
+# Copy built frontend from builder stage into /rag
+COPY --from=builder /app/dist /usr/share/nginx/html/rag
 
 # Expose port 80
 EXPOSE 80

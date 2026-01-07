@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000" # expose backend API port
     volumes: # credentials used to run the aws service, may be substituted for an IAM role
-      - ~/.aws:/root/.aws
+      - ~/.aws:/root/.aws:ro
     env_file:
       - ./backend/.env
     networks:
